@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  mariadb:
+    container_name: bfccoin_mariadb
+    image: mariadb:10
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=brs_master
+    command: mysqld --character_set_server=utf8mb4
+    volumes:
+      - ./burst_db:/var/lib/mysql
+    networks:
+      bfcnetwork:
+        aliases:
+          - bfccoin_mariadb
+
+  bfccoin:
+    container_name: bfccoin
+    image: insightalex/bfccoin:latest
+    restart: always
+    depends_on:
+      - mariadb
+    ports:
+      - 8323:8323
+      - 8325:8325
+      - 8321:8321
+    networks:
+      bfcnetwork:
+        aliases:
+          - bfccoin
+
+networks:
+  bfcnetwork:
+    driver: bridge
